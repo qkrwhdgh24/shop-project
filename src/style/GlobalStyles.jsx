@@ -63,8 +63,26 @@ button{
     background : transparent;
     cursor: pointer;
 }
+.container{
+	max-width: 1200px;
+	margin : 0px auto;
+	padding: 100px 0px;
+}
+.itemTitle{
+	font-size: 24px;
+	margin-bottom: 36px;
+	font-weight: normal;
+}
 
-
+.productList{
+	display: flex;
+	gap: 20px 5%;
+	flex-wrap: wrap;
+	li{
+		flex-basis: 30%;
+		flex-shrink: 0;
+	}
+}
 
 `
 

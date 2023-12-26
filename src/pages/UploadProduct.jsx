@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import { upLoadImg } from '../api/imgupload';
 import { addProducts } from '../api/firebase';
-import {styled} from 'styled-components'
+import { styled } from 'styled-components'
+import { CategoryContext } from '../context/CategoryContext';
 
 function UploadProduct() {
     const [file, setFile] = useState(null);
@@ -9,6 +10,13 @@ function UploadProduct() {
     const [success, setSuccess] = useState(null);
     const [error, setError] = useState(null);
     const fileRef = useRef();
+    const {categoryList} = useContext(CategoryContext);
+    console.log(categoryList)
+
+    const colors = [
+        '#f6d365', '#000000', '#a1c4fd', '#dddddd', '#4facfe',
+        '#30cfd0', '#764ba2', '#c471f5', '#3cba92', '#ffb199'
+    ]
 
 
     const [product, setProduct] = useState({
@@ -17,6 +25,7 @@ function UploadProduct() {
         option: '',
         category: '',
         description: '',
+        colors: [],
     })//모든 상품의 상태를 빈 문자열로 초기화 
 
     const poductInfoChange = (e) => {
@@ -26,6 +35,17 @@ function UploadProduct() {
         } else {
             setProduct((prev) => ({ ...prev, [name]: value }))
         }
+    }
+
+    const colorPicker = (color) => {
+        setProduct((prev) => ({
+            ...prev, colors: prev.colors.includes(color) ?
+                prev.colors : [...prev.colors, color]
+        }))
+    }
+    const removeColor = (colorRemove)=>{
+        setProduct((prev)=>
+        ({...prev, colors : prev.colors.filter(color => color !== colorRemove)}))
     }
 
     const uploadSubmit = async (e) => {
@@ -44,6 +64,7 @@ function UploadProduct() {
                 option: '',
                 category: '',
                 description: '',
+                colors: [],
             })
 
             if (fileRef.current) {
@@ -96,13 +117,28 @@ function UploadProduct() {
                     />
                     {/* 상품 가격 */}
 
-                    <input
+                    {/* <input
                         type='text'
                         name='category'
                         placeholder='상품 분류를 입력하세요'
                         value={product.category}
                         onChange={poductInfoChange}
-                    />
+                    /> */}
+                    {/* <select name='category' value={product.category} onChange={poductInfoChange}>
+                        <option value=''>분류 선택</option>
+                        <option value='top'>상의</option>
+                        <option value='bottom'>하의</option>
+                        <option value='outer'>아우터</option>
+                        <option value='accessory'>악세사리</option>
+                        <option value='etc'>기타</option>
+
+                    </select> */}
+                    <select name='category' value={product.category} onChange={poductInfoChange}>
+                        <option value=''>분류선택</option>
+                        {categoryList.map((el,index)=>(
+                            <option key={index} value={el}>{el}</option>
+                        ))}
+                    </select>
                     {/* 상품 분류 */}
 
                     <input
@@ -113,6 +149,26 @@ function UploadProduct() {
                         onChange={poductInfoChange}
                     />
                     {/* 상품 옵션  */}
+                    <ColorChip>
+                        {colors.map((color, index) => (
+                            <div className='colorChipItem'
+                                key={index}
+                                style={{ backgroundColor: color }}
+                                onClick={() => colorPicker(color)}
+                            />
+                        ))}
+                    </ColorChip>
+
+                    <ColorSelect>
+                        {product.colors.map((color, index) => (
+                            <div key={index}
+                                style={{ backgroundColor: color }}>
+                                {color}
+                                <button onClick={()=>removeColor(color)}>x</button>
+
+                            </div>
+                        ))}
+                    </ColorSelect>
 
                     <input
                         type='text'
@@ -178,5 +234,33 @@ const FormContainer = styled.div`
                 background:rgba(255,183,245,1);
             }
         }
+
+        
+    }
+`
+const ColorChip = styled.div`
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    .colorChipItem{
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        
+    }
+
+`
+const ColorSelect = styled.div`
+    display: flex ;
+    gap : 4px;
+    flex-wrap: wrap;
+    div{
+        width: 100px;
+        height: 30px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 `

@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components'
 import { googleLogOut, googleLogin, onUserState } from '../api/firebase';
 import UserData from './UserData';
 import { LuPencil } from "react-icons/lu";
 import { FaPen } from "react-icons/fa6";
+import MainMenu from './MainMenu';
 
 function Nav() {
-    const [user, setUser] = useState()
+    const [user, setUser] = useState();
+    const navigate = useNavigate();
 
     const login = () => {
-        googleLogin().then(setUser);
+        //googleLogin().then(setUser);
+        navigate('/login');//로그인 페이지로 이동하는 메서드로 변경
+        
 
     }
     const logOut = () => {
@@ -22,14 +26,14 @@ function Nav() {
             setUser(user);
         })
     }, [])
-    console.log(user)
     return (
         <HeaderContainer>
             <h1><Link to='/'>shop</Link></h1>
+            <MainMenu/>
+            <Link to='/board/qna'>QnA</Link>
 
             <div className='userWrap'>
-
-
+                <Link to='/search'>검색</Link>
                 {user && user.isAdmin &&
                     <Link to='/product/upload' className='uploadBtn'>업로드</Link>
                 }
